@@ -3,17 +3,19 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import pg from "pg";
 import bcrypt from "bcrypt";
+import env from "dotenv";
 
 const app = express();
 const port = 4000;
 const saltRounds = 10;
+env.config();
 
 const db = new pg.Client({
-  user: "postgres",
-  host: "localhost",
-  database: "notes",
-  password: "polska12",
-  port: 5432,
+  user: process.env.PG_USER,
+  host: process.env.PG_HOST,
+  database: process.env.PG_DATABASE,
+  password: process.env.PG_PASSWORD,
+  port: process.env.PG_PORT,
 });
 db.connect();
 
@@ -24,7 +26,6 @@ app.use(cors());
 
 async function getUsers() {
   const result = await db.query("SELECT * from users");
-  console.log(result.rows);
 }
 
 app.post("/api/register", async (req, res) => {
@@ -41,13 +42,13 @@ app.post("/api/register", async (req, res) => {
         if (err) {
           console.error("Error hashing password:", err);
         } else {
-          const user = await db.query(
+          const result = await db.query(
             "INSERT INTO users (name,email,password) VALUES ($1,$2,$3) RETURNING *",
             [name, email, hash]
           );
-
+          const userId = result.rows[0].id;
           res.send({
-            userId: user.id,
+            userId: userId,
           });
         }
       });
@@ -74,7 +75,6 @@ app.post("/api/login", async (req, res) => {
           console.error("Error comparing passwords: ", error);
         } else {
           if (result) {
-            console.log(user);
             res.send({
               userId: user.id,
             });
@@ -84,6 +84,10 @@ app.post("/api/login", async (req, res) => {
             });
           }
         }
+      });
+    } else {
+      res.json({
+        error: "Invalid credentails",
       });
     }
   } catch (error) {
@@ -131,6 +135,24 @@ app.delete("/api/notes/:noteId", async (req, res) => {
     );
     res.status(201).json({
       message: "Note deleted successfully",
+      note: result.rows[0],
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("sth wrong with db");
+  }
+});
+
+app.put("/api/notes/:noteId", async (req, res) => {
+  const noteId = req.params.noteId;
+  const { newTitle, newContent } = req.body;
+  try {
+    const result = await db.query(
+      "UPDATE notes SET title = $2, content=$3 where id = $1 RETURNING *",
+      [noteId, newTitle, newContent]
+    );
+    res.status(201).json({
+      message: "Note updatet successfully",
       note: result.rows[0],
     });
   } catch (error) {
