@@ -23,3 +23,6 @@ CREATE TABLE notes
 )
 
 insert into notes (title,content,user_id) values ('note 1','note 1 content', 1);
+
+
+curl -X POST http://localhost:3100/api/register -H "Content-Type: application/json" -d '{"name":"test","email":"test@example.com","password":"password123"}'
