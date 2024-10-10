@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import env from "dotenv";
 
 const app = express();
-const port = 4000;
+const port = 3100;
 const saltRounds = 10;
 env.config();
 
