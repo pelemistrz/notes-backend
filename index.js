@@ -28,6 +28,10 @@ async function getUsers() {
   const result = await db.query("SELECT * from users");
 }
 
+app.get("/", (req, res) => {
+  res.send("<h1>Hello world</h1>");
+});
+
 app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
 
