@@ -1,6 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
-import cors from "cors";
+// import cors from "cors";
 import pg from "pg";
 import bcrypt from "bcrypt";
 import env from "dotenv";
@@ -22,11 +22,7 @@ db.connect();
 //midllewares
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
-
-async function getUsers() {
-  const result = await db.query("SELECT * from users");
-}
+// app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("<h1>Hello world</h1>");

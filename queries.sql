@@ -7,6 +7,8 @@ CREATE TABLE users
     CONSTRAINT users_email_key UNIQUE (email)
 )
 
+insert into users (name,email,password) values ('Marcin','test@test.com','test');
+
 
 CREATE TABLE notes
 (
@@ -19,3 +21,5 @@ CREATE TABLE notes
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
 )
+
+insert into notes (title,content,user_id) values ('note 1','note 1 content', 1);
